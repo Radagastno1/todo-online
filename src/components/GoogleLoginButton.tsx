@@ -1,4 +1,5 @@
-// src/GoogleLoginButton.tsx
+// src/components/GoogleLoginButton.tsx
+import { Box, Typography } from "@mui/material";
 import {
   CredentialResponse,
   GoogleLogin,
@@ -6,8 +7,8 @@ import {
 } from "@react-oauth/google";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { User, addUserAsync } from "../slices/userSlice";
 import { useAppDispatch } from "../slices/store";
+import { User, addUserAsync } from "../slices/userSlice";
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -16,10 +17,7 @@ const GoogleLoginButton: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const handleLoginSuccess = async (response: CredentialResponse) => {
-    console.log("Login Success:", response);
-
     if (response.credential) {
-      // Verify token using Google's tokeninfo endpoint
       const userInfo = await fetch(
         `https://oauth2.googleapis.com/tokeninfo?id_token=${response.credential}`
       ).then((res) => res.json());
@@ -29,18 +27,14 @@ const GoogleLoginButton: React.FC = () => {
         return;
       }
 
-      // Spara användarens information i Firestore
-      const accountId = userInfo.sub;
-      console.log("USER INFO : ", userInfo);
       const user: User = {
-        accountId: accountId,
+        accountId: userInfo.sub,
         name: userInfo.name,
         email: userInfo.email,
         picture: userInfo.picture,
       };
-      dispatch(addUserAsync(user));
 
-      // Navigera till todo-sidan
+      dispatch(addUserAsync(user));
       navigate("/todo");
     }
   };
@@ -51,11 +45,31 @@ const GoogleLoginButton: React.FC = () => {
 
   return (
     <GoogleOAuthProvider clientId={clientId}>
-      <GoogleLogin
-        onSuccess={handleLoginSuccess}
-        onError={handleLoginError}
-        useOneTap
-      />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 2,
+        }}
+      >
+        <GoogleLogin
+          onSuccess={handleLoginSuccess}
+          onError={handleLoginError}
+          useOneTap
+        />
+
+        <Typography
+          variant="caption"
+          sx={{
+            color: "rgba(60,42,61,0.6)",
+            fontSize: 12,
+            textAlign: "center",
+          }}
+        >
+          Vi använder Google-inloggning för att spara dina todos säkert.
+        </Typography>
+      </Box>
     </GoogleOAuthProvider>
   );
 };

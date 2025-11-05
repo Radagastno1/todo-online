@@ -44,7 +44,7 @@ const LogIn = () => {
             color: "rgba(60,42,61,0.8)",
           }}
         >
-          Samla alla dina “måsten” på ett ställe och bocka av dem med stil. ✨
+          Samla alla dina “måsten” på ett ställe och bocka av dem med stil.
         </Typography>
 
         <GoogleLoginButton />
