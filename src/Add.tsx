@@ -1,4 +1,4 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, Paper, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "./slices/store";
@@ -15,15 +15,15 @@ const Add = () => {
 
   useEffect(() => {
     dispatch(loadUser());
-  }, []);
+  }, [dispatch]);
 
   const addTodo = () => {
     if (title !== "" && date !== "" && activeUser) {
       const todo: Todo = {
         id: "undefined",
-        title: title,
-        description: description,
-        date: date,
+        title,
+        description,
+        date,
         isDone: false,
         accountId: activeUser.accountId,
       };
@@ -35,37 +35,48 @@ const Add = () => {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
+        minHeight: "100%",
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
-        padding: "20px",
+        justifyContent: "center",
+        py: { xs: 3, md: 4 },
       }}
     >
-      <Box
+      <Paper
+        elevation={4}
         sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
           width: "100%",
-          margin: "40px",
+          maxWidth: 520,
+          borderRadius: 4,
+          px: { xs: 3, md: 4 },
+          py: { xs: 3, md: 4 },
+          bgcolor: "rgba(255,255,255,0.98)",
+          border: "1px solid rgba(244,143,177,0.4)",
         }}
       >
-        <Typography variant="h4">Lägg till ny todo</Typography>
-      </Box>
-      <Box
-        sx={{
-          backgroundColor: "white",
-          padding: "50px",
-          borderRadius: "8px",
-          border: "2px solid rgba(0.3, 0.5, 0, 0.7)",
-          width: "100%",
-          height: "100%",
-          maxWidth: "600px",
-          maxHeight: "600px",
-          boxShadow: "4",
-        }}
-      >
+        <Typography
+          variant="h5"
+          sx={{
+            mb: 2,
+            fontWeight: 600,
+            color: "#3c2a3d",
+            textAlign: "center",
+          }}
+        >
+          Lägg till ny todo
+        </Typography>
+        <Typography
+          sx={{
+            mb: 3,
+            fontSize: 13,
+            color: "rgba(60,42,61,0.7)",
+            textAlign: "center",
+          }}
+        >
+          Skriv vad du ska göra, lägg till en liten beskrivning och välj när det
+          ska vara klart.
+        </Typography>
+
         <TextField
           label="Vad ska du göra?"
           variant="outlined"
@@ -73,41 +84,49 @@ const Add = () => {
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           fullWidth
-          sx={{
-            marginBottom: "15px",
-          }}
+          sx={{ mb: 2 }}
         />
+
         <TextField
-          label="Beskriv mer"
+          label="Beskrivning (valfritt)"
           variant="outlined"
-          type="text"
+          multiline
+          minRows={3}
           value={description}
           onChange={(event) => setDescription(event.target.value)}
           fullWidth
-          sx={{
-            marginBottom: "15px",
-          }}
+          sx={{ mb: 2 }}
         />
+
         <TextField
-          label=""
+          label="Datum & tid"
           type="datetime-local"
           value={date}
           onChange={(event) => setDate(event.target.value)}
           variant="outlined"
           fullWidth
-          sx={{
-            marginBottom: "15px",
-          }}
+          InputLabelProps={{ shrink: true }}
+          sx={{ mb: 3 }}
         />
+
         <Button
           variant="contained"
-          color="success"
           fullWidth
-          onClick={() => addTodo()}
+          onClick={addTodo}
+          sx={{
+            py: 1.2,
+            borderRadius: 999,
+            backgroundColor: "#f48fb1",
+            textTransform: "none",
+            fontWeight: 600,
+            "&:hover": {
+              backgroundColor: "#ec7ca5",
+            },
+          }}
         >
           Lägg till
         </Button>
-      </Box>
+      </Paper>
     </Box>
   );
 };

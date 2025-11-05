@@ -66,10 +66,10 @@ export default function TodoPage() {
       const todoDate = new Date(todo.date);
       return todoDate >= startDate && todoDate <= endDate;
     });
-    const finishedTodos = filtered.filter((t) => t.isDone == true);
-    setFinishedTodos(finishedTodos);
-    const unFinishedTodos = filtered.filter((t) => t.isDone == false);
-    setFilteredTodos(unFinishedTodos);
+    const finished = filtered.filter((t) => t.isDone);
+    setFinishedTodos(finished);
+    const unFinished = filtered.filter((t) => !t.isDone);
+    setFilteredTodos(unFinished);
   };
 
   const handleTodoToggle = (id: string) => {
@@ -90,6 +90,7 @@ export default function TodoPage() {
       const updatedTodo: Todo = {
         ...editedTodo,
         title: editedTodo.title,
+        description: editedTodo.description,
         date: editedTodo.date,
       };
       dispatch(editTodoAsync(updatedTodo));
@@ -127,265 +128,455 @@ export default function TodoPage() {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
-        padding: "20px",
+        minHeight: "100%",
         display: "flex",
         flexDirection: "column",
-        backgroundColor: "white",
-        height: "100%",
-        background: "linear-gradient(135deg, #4a90e2, #6d28d9)",
+        gap: 3,
       }}
     >
-      <Box
+      {/* Vecko-header */}
+      <Paper
+        elevation={2}
         sx={{
+          px: 2,
+          py: 1.5,
+          mb: 1,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          width: "100%",
-          marginBottom: "20px",
-          // backgroundColor: "white",
-          height: "100%",
-          color: "white",
+          gap: 1,
+          borderRadius: 999,
+          bgcolor: "rgba(255,255,255,0.9)",
         }}
       >
-        <IconButton onClick={updateWeekBackwards}>
-          <ChevronLeftIcon sx={{ color: "white" }} />
+        <IconButton size="small" onClick={updateWeekBackwards}>
+          <ChevronLeftIcon sx={{ color: "#e91e63" }} />
         </IconButton>
-        <Typography sx={{ fontSize: { xs: 14, md: 26 } }}>
-          Vecka {getWeekNumber(currentStartDate)} (
-          {formatDate(currentStartDate)} - {formatDate(currentEndDate)})
+        <Typography
+          sx={{
+            fontSize: { xs: 14, md: 20 },
+            fontWeight: 500,
+            color: "#3c2a3d",
+            textAlign: "center",
+          }}
+        >
+          Vecka {getWeekNumber(currentStartDate)} •{" "}
+          {formatDate(currentStartDate)} – {formatDate(currentEndDate)}
         </Typography>
-        <IconButton onClick={updateWeekForward}>
-          <ChevronRightIcon sx={{ color: "white" }} />
+        <IconButton size="small" onClick={updateWeekForward}>
+          <ChevronRightIcon sx={{ color: "#e91e63" }} />
         </IconButton>
-      </Box>
+      </Paper>
 
+      {/* Två kolumner */}
       <Box
         sx={{
           display: "flex",
           flexDirection: { xs: "column", md: "row" },
-          height: "100vh",
-          justifyContent: "space-between",
+          gap: 3,
         }}
       >
-        <Box
+        {/* Att göra */}
+        <Paper
+          elevation={3}
           sx={{
-            backgroundColor: "white",
-            width: { xs: "100%", md: "45%" },
-            borderRadius: 2,
-            spacing: "2",
-            overflowY: "scroll",
+            flex: 1,
+            borderRadius: 3,
+            bgcolor: "#fff5fb",
+            display: "flex",
+            flexDirection: "column",
+            maxHeight: { xs: "none", md: "calc(100vh - 220px)" },
+            overflow: "hidden",
           }}
         >
           <Box
             sx={{
+              px: 2.5,
+              py: 2,
+              borderBottom: "1px solid rgba(233,30,99,0.15)",
               display: "flex",
-              justifyContent: "center",
-              backgroundColor: "white",
-              marginY: "30px",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 1,
             }}
           >
-            <Typography sx={{ fontSize: 26, marginX: 2 }}>Att göra</Typography>
+            <Typography
+              sx={{
+                fontSize: { xs: 18, md: 22 },
+                fontWeight: 600,
+                color: "#3c2a3d",
+              }}
+            >
+              Att göra
+            </Typography>
             <Button
               variant="contained"
               onClick={() => navigate("/addtodo")}
               sx={{
-                justifyContent: "center",
+                borderRadius: 999,
+                px: 2.5,
+                py: 0.5,
+                backgroundColor: "#f48fb1",
+                textTransform: "none",
+                fontWeight: 600,
+                "&:hover": {
+                  backgroundColor: "#ec7ca5",
+                },
               }}
             >
               Lägg till
             </Button>
           </Box>
-          {filteredTodos.map((todo) => (
-            <Box
-              sx={{
-                marginY: 2,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-              component="div"
-              key={todo.id}
-            >
-              <Paper
-                elevation={3}
+
+          <Box
+            sx={{
+              flex: 1,
+              overflowY: "auto",
+              px: 2,
+              py: 1.5,
+            }}
+          >
+            {filteredTodos.length === 0 && (
+              <Typography
                 sx={{
-                  padding: "10px",
+                  fontSize: 14,
+                  color: "rgba(60,42,61,0.7)",
+                  textAlign: "center",
+                  mt: 3,
+                }}
+              >
+                Inga todos den här veckan ännu. Lägg till en uppgift 💫
+              </Typography>
+            )}
+
+            {filteredTodos.map((todo) => (
+              <Box
+                key={todo.id}
+                sx={{
+                  my: 1.2,
                   display: "flex",
-                  alignItems: "center",
-                  width: "80%",
                   justifyContent: "center",
                 }}
               >
-                <Checkbox
-                  checked={todo.isDone}
-                  onChange={() => handleTodoToggle(todo.id)}
-                  sx={{ marginRight: "10px" }}
-                />
+                <Paper
+                  elevation={1}
+                  sx={{
+                    width: "100%",
+                    maxWidth: 520,
+                    px: 1.5,
+                    py: 1,
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 1,
+                    bgcolor: "white",
+                    borderRadius: 2,
+                  }}
+                >
+                  <Checkbox
+                    checked={todo.isDone}
+                    onChange={() => handleTodoToggle(todo.id)}
+                    sx={{
+                      mt: 0.5,
+                      color: "#f48fb1",
+                      "&.Mui-checked": { color: "#f06292" },
+                    }}
+                  />
 
-                {!isEditMode || editedTodo?.id !== todo.id ? (
+                  {/* Visa- eller edit-läge */}
+                  <Box sx={{ flexGrow: 1 }}>
+                    {!isEditMode || editedTodo?.id !== todo.id ? (
+                      <>
+                        <Typography
+                          variant="subtitle1"
+                          sx={{
+                            fontWeight: 600,
+                            textDecoration: todo.isDone
+                              ? "line-through"
+                              : "none",
+                            color: "#3c2a3d",
+                          }}
+                        >
+                          {todo.title}
+                        </Typography>
+
+                        {todo.description && (
+                          <Typography
+                            variant="body2"
+                            title={todo.description}
+                            sx={{
+                              mt: 0.5,
+                              fontSize: 13,
+                              color: "rgba(60,42,61,0.8)",
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                              whiteSpace: "pre-wrap",
+                            }}
+                          >
+                            {todo.description}
+                          </Typography>
+                        )}
+
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            mt: 0.5,
+                            display: "block",
+                            color: "rgba(60,42,61,0.6)",
+                          }}
+                        >
+                          Datum: {formatDate(new Date(todo.date))}
+                        </Typography>
+                      </>
+                    ) : (
+                      <>
+                        <TextField
+                          variant="outlined"
+                          type="text"
+                          label="Titel"
+                          size="small"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleEditTodo();
+                          }}
+                          value={editedTodo?.title}
+                          onChange={(e) =>
+                            setEditedTodo({
+                              ...editedTodo!,
+                              title: e.target.value,
+                            })
+                          }
+                          fullWidth
+                          sx={{ mb: 1 }}
+                        />
+                        <TextField
+                          variant="outlined"
+                          type="text"
+                          label="Beskrivning"
+                          multiline
+                          minRows={2}
+                          value={editedTodo?.description ?? ""}
+                          onChange={(e) =>
+                            setEditedTodo({
+                              ...editedTodo!,
+                              description: e.target.value,
+                            })
+                          }
+                          fullWidth
+                          sx={{ mb: 1 }}
+                        />
+                        <TextField
+                          label="Datum"
+                          type="datetime-local"
+                          value={editedTodo?.date}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleEditTodo();
+                          }}
+                          onChange={(e) =>
+                            setEditedTodo({
+                              ...editedTodo!,
+                              date: e.target.value,
+                            })
+                          }
+                          variant="outlined"
+                          size="small"
+                          fullWidth
+                        />
+                      </>
+                    )}
+                  </Box>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-end",
+                      ml: 0.5,
+                    }}
+                  >
+                    {!isEditMode || editedTodo?.id !== todo.id ? (
+                      <>
+                        <IconButton
+                          onClick={() => handleSetEditMode(todo)}
+                          size="small"
+                          sx={{ mb: 0.5 }}
+                        >
+                          <EditIcon
+                            fontSize="small"
+                            sx={{ color: "#f06292" }}
+                          />
+                        </IconButton>
+                        <IconButton
+                          onClick={() => handleDeleteTodo(todo.id)}
+                          size="small"
+                        >
+                          <DeleteOutlineIcon
+                            fontSize="small"
+                            sx={{ color: "#b0b0b0" }}
+                          />
+                        </IconButton>
+                      </>
+                    ) : (
+                      <>
+                        <IconButton
+                          onClick={handleEditTodo}
+                          size="small"
+                          sx={{ mb: 0.5 }}
+                        >
+                          <EditIcon
+                            fontSize="small"
+                            sx={{ color: "#4caf50" }}
+                          />
+                        </IconButton>
+                        <IconButton onClick={handleCancelEdit} size="small">
+                          <DeleteOutlineIcon
+                            fontSize="small"
+                            sx={{ color: "#e57373" }}
+                          />
+                        </IconButton>
+                      </>
+                    )}
+                  </Box>
+                </Paper>
+              </Box>
+            ))}
+          </Box>
+        </Paper>
+
+        {/* Klara todos */}
+        <Paper
+          elevation={3}
+          sx={{
+            flex: 1,
+            borderRadius: 3,
+            bgcolor: "#fdf7ff",
+            display: "flex",
+            flexDirection: "column",
+            maxHeight: { xs: "none", md: "calc(100vh - 220px)" },
+            overflow: "hidden",
+          }}
+        >
+          <Box
+            sx={{
+              px: 2.5,
+              py: 2,
+              borderBottom: "1px solid rgba(156,39,176,0.15)",
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: { xs: 18, md: 22 },
+                fontWeight: 600,
+                color: "#4a148c",
+              }}
+            >
+              Klart ✅
+            </Typography>
+          </Box>
+
+          <Box
+            sx={{
+              flex: 1,
+              overflowY: "auto",
+              px: 2,
+              py: 1.5,
+            }}
+          >
+            {finishedTodos.length === 0 && (
+              <Typography
+                sx={{
+                  fontSize: 14,
+                  color: "rgba(74,20,140,0.6)",
+                  textAlign: "center",
+                  mt: 3,
+                }}
+              >
+                Inga färdiga uppgifter ännu.
+              </Typography>
+            )}
+
+            {finishedTodos.map((todo) => (
+              <Box
+                key={todo.id}
+                sx={{ my: 1.2, display: "flex", justifyContent: "center" }}
+              >
+                <Paper
+                  elevation={0}
+                  sx={{
+                    width: "100%",
+                    maxWidth: 520,
+                    px: 1.5,
+                    py: 1,
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 1,
+                    bgcolor: "rgba(255,255,255,0.9)",
+                    borderRadius: 2,
+                  }}
+                >
+                  <Checkbox
+                    checked={todo.isDone}
+                    onChange={() => handleTodoToggle(todo.id)}
+                    sx={{
+                      mt: 0.5,
+                      color: "#4caf50",
+                      "&.Mui-checked": { color: "#66bb6a" },
+                    }}
+                  />
                   <Box sx={{ flexGrow: 1 }}>
                     <Typography
-                      variant="body1"
+                      variant="subtitle1"
                       sx={{
-                        textDecoration: todo.isDone ? "line-through" : "none",
+                        fontWeight: 500,
+                        textDecoration: "line-through",
+                        color: "rgba(0,0,0,0.6)",
                       }}
                     >
                       {todo.title}
                     </Typography>
-                    <Typography variant="caption">
-                      Datum: {formatDate(new Date(todo.date))}
+                    {todo.description && (
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          mt: 0.5,
+                          fontSize: 13,
+                          color: "rgba(0,0,0,0.55)",
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          whiteSpace: "pre-wrap",
+                        }}
+                      >
+                        {todo.description}
+                      </Typography>
+                    )}
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        mt: 0.5,
+                        display: "block",
+                        color: "rgba(0,0,0,0.45)",
+                      }}
+                    >
+                      Klar: {formatDate(new Date(todo.date))}
                     </Typography>
                   </Box>
-                ) : (
-                  <>
-                    <TextField
-                      variant="outlined"
-                      type="text"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") handleEditTodo();
-                      }}
-                      value={editedTodo?.title}
-                      onChange={(e) =>
-                        setEditedTodo({ ...editedTodo, title: e.target.value })
-                      }
-                      fullWidth
-                      sx={{
-                        "& .MuiOutlinedInput-root": {
-                          "& fieldset": {
-                            borderColor: "grey",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "grey",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "grey",
-                          },
-                        },
-                      }}
-                    />
-                    <TextField
-                      label="Datum"
-                      type="datetime-local"
-                      value={editedTodo.date}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") handleEditTodo();
-                      }}
-                      onChange={(e) =>
-                        setEditedTodo({
-                          ...editedTodo,
-                          date: e.target.value,
-                        })
-                      }
-                      variant="outlined"
-                      sx={{
-                        width: "250px",
-                        marginTop: 2,
-                        "& label": {
-                          color: "transparent",
-                        },
-                        "&:focus label": {
-                          color: "initial",
-                        },
-                      }}
-                    />
-                  </>
-                )}
-                <Box sx={{ display: "flex", flexDirection: "column" }}>
-                  {!isEditMode || editedTodo?.id !== todo.id ? (
-                    <>
-                      <IconButton
-                        onClick={() => handleSetEditMode(todo)}
-                        size="small"
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => handleDeleteTodo(todo.id)}
-                        size="small"
-                      >
-                        <DeleteOutlineIcon fontSize="small" />
-                      </IconButton>
-                    </>
-                  ) : (
-                    <>
-                      <IconButton
-                        onClick={handleEditTodo}
-                        size="small"
-                        color="primary"
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        onClick={handleCancelEdit}
-                        size="small"
-                        color="secondary"
-                      >
-                        <DeleteOutlineIcon fontSize="small" />
-                      </IconButton>
-                    </>
-                  )}
-                </Box>
-              </Paper>
-            </Box>
-          ))}
-        </Box>
-        <Box
-          sx={{
-            width: { xs: "100%", md: "45%" },
-            marginY: { xs: 2, md: 0 },
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            height: "100%",
-            borderRadius: 2,
-            overflowY: "scroll",
-            backgroundColor: "white",
-          }}
-        >
-          <Typography variant="h5" sx={{ marginY: 2, padding: 2 }}>
-            Färdiga Att göra
-          </Typography>
-          {finishedTodos.map((todo) => (
-            <Paper
-              key={todo.id}
-              elevation={3}
-              sx={{
-                padding: "10px",
-                display: "flex",
-                alignItems: "center",
-                width: "80%",
-                marginBottom: 2,
-                justifyContent: "center",
-              }}
-            >
-              <Checkbox
-                checked={todo.isDone}
-                onChange={() => handleTodoToggle(todo.id)}
-                sx={{ marginRight: "10px" }}
-              />
-              <Box sx={{ flexGrow: 1 }}>
-                <Typography
-                  variant="body1"
-                  sx={{
-                    textDecoration: todo.isDone ? "line-through" : "none",
-                  }}
-                >
-                  {todo.title}
-                </Typography>
-                <Typography variant="caption">
-                  Datum: {formatDate(new Date(todo.date))}
-                </Typography>
+                </Paper>
               </Box>
-            </Paper>
-          ))}
-        </Box>
+            ))}
+          </Box>
+        </Paper>
       </Box>
+
+      {/* Fullscreen-overlay för editerad todo – hanteras redan via state */}
+      {/* (Inget extra här) */}
+      {activeUser && null}
     </Box>
   );
 }
 
-// Helper functions
+// Helper functions (samma som tidigare)
 function getStartOfWeek(date: Date): Date {
   const startOfWeek = new Date(date);
   const dayOfWeek = startOfWeek.getDay();

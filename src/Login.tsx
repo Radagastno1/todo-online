@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 import GoogleLoginButton from "./components/GoogleLoginButton";
 
 const LogIn = () => {
@@ -7,35 +7,48 @@ const LogIn = () => {
       sx={{
         minHeight: "100vh",
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#f0f0f0",
-        padding: "20px",
+        background:
+          "linear-gradient(145deg, #ffe4f0 0%, #e3f2fd 40%, #fff7e6 100%)",
+        px: 2,
       }}
     >
-      <Typography variant="h3" sx={{ marginBottom: "20px" }}>
-        Välkommen till Todo-Online
-      </Typography>
-      <Box
+      <Paper
+        elevation={4}
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "20px",
+          maxWidth: 420,
+          width: "100%",
+          borderRadius: 4,
+          px: { xs: 3, md: 4 },
+          py: { xs: 4, md: 5 },
+          textAlign: "center",
+          bgcolor: "rgba(255,255,255,0.95)",
         }}
       >
-        {/* Här kan du lägga till din logotyp om du har en */}
-        {/* Exempel på en logotyp */}
-        {/* <img src="/logo.png" alt="logo" style={{ width: "100px" }} /> */}
+        <Typography
+          variant="h4"
+          sx={{
+            mb: 1,
+            fontWeight: 700,
+            color: "#3c2a3d",
+            fontSize: { xs: 24, md: 28 },
+          }}
+        >
+          Välkommen till Todo-Online
+        </Typography>
+        <Typography
+          sx={{
+            mb: 3,
+            fontSize: 14,
+            color: "rgba(60,42,61,0.8)",
+          }}
+        >
+          Samla alla dina “måsten” på ett ställe och bocka av dem med stil. ✨
+        </Typography>
 
         <GoogleLoginButton />
-
-        {/* Alternativ knapp för vanlig inloggning */}
-        {/* <Button variant="contained" color="primary" fullWidth>
-          Logga in
-        </Button> */}
-      </Box>
+      </Paper>
     </Box>
   );
 };
