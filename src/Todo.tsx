@@ -31,10 +31,10 @@ export default function TodoPage() {
   const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
   const [finishedTodos, setFinishedTodos] = useState<Todo[]>([]);
   const [currentStartDate, setCurrentStartDate] = useState<Date>(() =>
-    getStartOfWeek(new Date())
+    getStartOfWeek(new Date()),
   );
   const [currentEndDate, setCurrentEndDate] = useState<Date>(() =>
-    getEndOfWeek(new Date())
+    getEndOfWeek(new Date()),
   );
   const navigate = useNavigate();
 
@@ -60,7 +60,7 @@ export default function TodoPage() {
   const filterTodosByDateRange = (
     todos: Todo[],
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ) => {
     const filtered = todos.filter((todo) => {
       const todoDate = new Date(todo.date);
@@ -207,8 +207,24 @@ export default function TodoPage() {
                 color: "#3c2a3d",
               }}
             >
-              Att göra
+              Att göra{" "}
+              <Box
+                component="span"
+                sx={{
+                  ml: 1,
+                  px: 1.2,
+                  py: 0.2,
+                  borderRadius: 999,
+                  fontSize: 13,
+                  bgcolor: "#f8bbd0",
+                  color: "#6a1b9a",
+                  fontWeight: 600,
+                }}
+              >
+                {filteredTodos.length}
+              </Box>
             </Typography>
+
             <Button
               variant="contained"
               onClick={() => navigate("/addtodo")}
@@ -234,6 +250,13 @@ export default function TodoPage() {
               overflowY: "auto",
               px: 2,
               py: 1.5,
+              position: "relative",
+
+              /* Scroll fade */
+              maskImage:
+                "linear-gradient(to bottom, black 85%, transparent 100%)",
+              WebkitMaskImage:
+                "linear-gradient(to bottom, black 85%, transparent 100%)",
             }}
           >
             {filteredTodos.length === 0 && (
@@ -608,7 +631,7 @@ function getWeekNumber(date: Date): number {
       ((tempDate.getTime() - week1.getTime()) / 86400000 -
         3 +
         ((week1.getDay() + 6) % 7)) /
-        7
+        7,
     )
   );
 }
